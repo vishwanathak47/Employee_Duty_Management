@@ -31,6 +31,23 @@ app.use('/api/employees', require('./routes/employees'));
 app.use('/api/duties', require('./routes/duties'));
 app.use('/api/reports', require('./routes/reports'));
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Employee Duty Management System API',
+    version: '1.0.0',
+    status: 'Running',
+    endpoints: {
+      auth: '/api/auth',
+      employees: '/api/employees',
+      duties: '/api/duties',
+      reports: '/api/reports',
+      health: '/api/health'
+    },
+    timestamp: moment().format()
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: moment().format() });
