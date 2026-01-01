@@ -21,27 +21,8 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve from cache or network
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/api/')) {
-    // For API calls, try network first, then cache
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Clone the response
-          const responseClone = response.clone();
-          // Cache the response
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseClone);
-            });
-          return response;
-        })
-        .catch(() => {
-          // If network fails, try cache
-          return caches.match(event.request);
-        })
-    );
-  } else {
-    // For static assets, cache first
+  // Only cache GET requests for static assets, skip API calls
+  if (event.request.method === 'GET' && !event.request.url.includes('/api/')) {
     event.respondWith(
       caches.match(event.request)
         .then((response) => {
@@ -49,6 +30,7 @@ self.addEventListener('fetch', (event) => {
         })
     );
   }
+  // API calls and POST requests go directly to network
 });
 
 // Activate event - clean up old caches
